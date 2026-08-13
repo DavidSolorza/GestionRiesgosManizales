@@ -9,7 +9,7 @@ import { GlobalToast } from './components/ui/GlobalToast';
 import { useEmergencyStore } from './features/emergency_map/application/useEmergencyStore';
 
 function App() {
-  const { startPolling, stopPolling } = useEmergencyStore();
+  const { startPolling, stopPolling, reports, setSidebarOpen } = useEmergencyStore();
 
   useEffect(() => {
     startPolling();
@@ -20,10 +20,20 @@ function App() {
     <div className="w-full h-screen font-sans relative overflow-hidden bg-slate-50">
       <TopNavbar />
       
-      {/* Map occupies the remaining screen space to the left of the sidebar on desktop, and top on mobile */}
-      <main className="w-full h-full pt-[60px] lg:pr-[400px] pb-[45vh] lg:pb-0">
+      {/* Map occupies full screen on mobile, and the remaining space on desktop */}
+      <main className="w-full h-full pt-[60px] lg:pr-[400px]">
         <MapView />
       </main>
+
+      {/* Floating Action Button only on mobile to open Sidebar */}
+      <button 
+        onClick={() => setSidebarOpen(true)}
+        className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[400] bg-slate-900 text-white px-6 py-3 rounded-full font-semibold shadow-2xl flex items-center gap-2 active:scale-95 transition-all"
+      >
+        <span>Ver </span>
+        <span className="bg-brand-500 px-2 py-0.5 rounded text-xs font-bold">{reports.length}</span>
+        <span> Reportes</span>
+      </button>
 
       <Sidebar />
       

@@ -17,6 +17,7 @@ interface EmergencyState {
   isHelpOpen: boolean;
   isOfferFormOpen: boolean;
   isAdminLoginOpen: boolean;
+  isSidebarOpen: boolean;
   globalToast: { message: string, visible: boolean } | null;
 
   // Actions
@@ -37,6 +38,7 @@ interface EmergencyState {
   setHelpOpen: (isOpen: boolean) => void;
   setOfferFormOpen: (isOpen: boolean) => void;
   setAdminLoginOpen: (isOpen: boolean) => void;
+  setSidebarOpen: (isOpen: boolean) => void;
   showToast: (message: string) => void;
   hideToast: () => void;
 }
@@ -56,6 +58,7 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   isHelpOpen: false,
   isOfferFormOpen: false,
   isAdminLoginOpen: false,
+  isSidebarOpen: false,
   globalToast: null,
   
   setIsAdmin: (value) => set({ isAdmin: value }),
@@ -63,6 +66,7 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   setHelpOpen: (isOpen) => set({ isHelpOpen: isOpen }),
   setOfferFormOpen: (isOpen) => set({ isOfferFormOpen: isOpen }),
   setAdminLoginOpen: (isOpen) => set({ isAdminLoginOpen: isOpen }),
+  setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
   showToast: (message) => {
     set({ globalToast: { message, visible: true } });
     setTimeout(() => {

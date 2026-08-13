@@ -1,8 +1,8 @@
-import { Phone, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Phone, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { useEmergencyStore } from '../../application/useEmergencyStore';
 
 export function Sidebar() {
-  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus } = useEmergencyStore();
+  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen } = useEmergencyStore();
 
   const filteredReports = reports.filter(report => {
     if (activeFilter === 'all') return true;
@@ -29,12 +29,31 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-full lg:w-[400px] h-[45vh] lg:h-full bg-white border-t lg:border-t-0 lg:border-l border-slate-200 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] lg:shadow-xl flex flex-col z-[500] absolute right-0 bottom-0 lg:top-0 lg:bottom-auto pt-0 lg:pt-[60px] transition-all">
-      <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-        <h2 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-brand-600" />
-          Filtros de Estado
-        </h2>
+    <>
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-slate-900/40 z-[490] backdrop-blur-sm transition-opacity" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside 
+        className={`w-full lg:w-[400px] h-[85vh] lg:h-full bg-white lg:border-l border-slate-200 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] lg:shadow-xl flex flex-col z-[500] fixed lg:absolute right-0 bottom-0 lg:top-0 lg:bottom-auto pt-0 lg:pt-[60px] transition-transform duration-300 rounded-t-3xl lg:rounded-none ${isSidebarOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}`}
+      >
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-3xl lg:rounded-none">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-brand-600" />
+              Filtros de Estado
+            </h2>
+            <button 
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         
         <div className="flex flex-wrap gap-2">
           {[
@@ -139,6 +158,7 @@ export function Sidebar() {
           ))
         )}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

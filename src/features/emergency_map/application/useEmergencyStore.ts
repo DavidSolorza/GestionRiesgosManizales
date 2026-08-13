@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { EmergencyReport } from '../domain/EmergencyReport';
 import type { HelpOffer } from '../domain/Offer';
-import { emergencyService } from '../infrastructure/emergencyService';
+import { supabaseService } from '../infrastructure/supabaseService';
 
 interface EmergencyState {
   reports: EmergencyReport[];
@@ -21,6 +21,9 @@ interface EmergencyState {
 
   // Actions
   fetchReports: () => Promise<void>;
+  fetchOffers: () => Promise<void>;
+  startPolling: () => void;
+  stopPolling: () => void;
   submitReport: (report: Omit<EmergencyReport, 'id' | 'createdAt' | 'coordinates'>) => Promise<boolean>;
   submitOffer: (offer: Omit<HelpOffer, 'id' | 'createdAt'>) => Promise<boolean>;
   updateReportStatus: (reportId: string, status: EmergencyReport['status']) => Promise<boolean>;
@@ -37,6 +40,8 @@ interface EmergencyState {
   showToast: (message: string) => void;
   hideToast: () => void;
 }
+
+let pollingInterval: number | null = null;
 
 export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   reports: [],
@@ -71,9 +76,8 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   clearLocation: () => set({ selectedLocation: null }),
 
   fetchReports: async () => {
-    set({ isLoading: true });
     try {
-      const reports = await emergencyService.getReports();
+      const reports = await supabaseService.getReports();
       set({ reports, isLoading: false });
     } catch (error) {
       console.error('Failed to fetch reports', error);
@@ -81,41 +85,68 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
     }
   },
 
+  fetchOffers: async () => {
+    try {
+      const offers = await supabaseService.getOffers();
+      set({ offers });
+    } catch (error) {
+      console.error('Failed to fetch offers', error);
+    }
+  },
+
+  startPolling: () => {
+    if (pollingInterval) return;
+    // Carga inicial
+    set({ isLoading: true });
+    get().fetchReports();
+    get().fetchOffers();
+    
+    // Polling cada 30 segundos
+    pollingInterval = window.setInterval(() => {
+      get().fetchReports();
+      get().fetchOffers();
+    }, 30000);
+  },
+
+  stopPolling: () => {
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+      pollingInterval = null;
+    }
+  },
+
   submitReport: async (reportData) => {
-    const { selectedLocation } = get();
-    if (!selectedLocation) return false;
+    const { selectedLocation, isSubmitting } = get();
+    if (!selectedLocation || isSubmitting) return false;
 
     set({ isSubmitting: true });
     try {
-      const newReport = await emergencyService.createReport({
+      const newReport = await supabaseService.createReport({
         ...reportData,
         coordinates: selectedLocation,
       });
       set(state => ({ 
-        reports: [...state.reports, newReport],
+        reports: [newReport, ...state.reports],
         selectedLocation: null,
         isSubmitting: false 
       }));
       return true;
     } catch (error) {
       console.error('Failed to submit report', error);
+      get().showToast('Error al enviar el reporte.');
       set({ isSubmitting: false });
       return false;
     }
   },
 
   submitOffer: async (offerData) => {
+    if (get().isSubmitting) return false;
+    
     set({ isSubmitting: true });
     try {
-      // simulate network request
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const newOffer: HelpOffer = {
-        ...offerData,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString()
-      };
+      const newOffer = await supabaseService.createOffer(offerData);
       set(state => ({
-        offers: [...state.offers, newOffer],
+        offers: [newOffer, ...state.offers],
         isSubmitting: false,
         isOfferFormOpen: false
       }));
@@ -123,6 +154,7 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
       return true;
     } catch (error) {
       console.error('Failed to submit offer', error);
+      get().showToast('Error al registrar el ofrecimiento.');
       set({ isSubmitting: false });
       return false;
     }
@@ -130,12 +162,15 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
 
   updateReportStatus: async (reportId, status) => {
     try {
+      await supabaseService.updateReportStatus(reportId, status);
+      // Optimistic update
       set(state => ({
         reports: state.reports.map(r => r.id === reportId ? { ...r, status } : r)
       }));
       get().showToast('Estado del reporte actualizado.');
       return true;
     } catch(error) {
+      get().showToast('Error al actualizar el estado.');
       return false;
     }
   }

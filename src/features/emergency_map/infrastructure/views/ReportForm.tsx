@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, MapPin } from 'lucide-react';
 import type { EmergencySeverity, EmergencyStatus } from '../../domain/EmergencyReport';
+import { useEmergencyStore } from '../../application/useEmergencyStore';
 
 interface ReportFormProps {
   onClose: () => void;
@@ -8,12 +9,20 @@ interface ReportFormProps {
 }
 
 export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
+  const { isSubmitting } = useEmergencyStore();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [severity, setSeverity] = useState<EmergencySeverity>('medium');
   const [reporterName, setReporterName] = useState('');
   const [reporterPhone, setReporterPhone] = useState('');
   const [needs, setNeeds] = useState('Alimentos');
+
+  // CAPTCHA State
+  const [num1] = useState(Math.floor(Math.random() * 10) + 1);
+  const [num2] = useState(Math.floor(Math.random() * 10) + 1);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  const [captchaError, setCaptchaError] = useState(false);
 
   // Prevención de XSS básica eliminando tags
   const sanitizeInput = (input: string) => {
@@ -22,6 +31,11 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (parseInt(captchaAnswer) !== num1 + num2) {
+      setCaptchaError(true);
+      return;
+    }
+    
     const cleanTitle = sanitizeInput(title.trim());
     const cleanDescription = sanitizeInput(description.trim());
     const cleanName = sanitizeInput(reporterName.trim());
@@ -134,11 +148,34 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
             </select>
           </div>
 
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Verificación de seguridad: ¿Cuánto es {num1} + {num2}? <span className="text-alert-600">*</span>
+            </label>
+            <input 
+              type="number" 
+              required
+              placeholder="Tu respuesta"
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"
+              value={captchaAnswer}
+              onChange={(e) => {
+                setCaptchaAnswer(e.target.value);
+                setCaptchaError(false);
+              }}
+            />
+            {captchaError && <p className="text-alert-600 text-xs mt-1 font-medium">Respuesta incorrecta. Intenta de nuevo.</p>}
+          </div>
+
           <button 
             type="submit" 
-            className="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl shadow-md transition-all active:scale-[0.98]"
+            disabled={isSubmitting}
+            className="w-full py-2.5 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:active:scale-100 text-white text-sm font-semibold rounded-xl shadow-md transition-all active:scale-[0.98] flex items-center justify-center"
           >
-            Continuar Reporte
+            {isSubmitting ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              'Enviar Reporte'
+            )}
           </button>
         </form>
       </div>

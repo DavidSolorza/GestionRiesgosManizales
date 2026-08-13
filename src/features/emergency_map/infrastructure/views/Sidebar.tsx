@@ -4,10 +4,13 @@ import { useEmergencyStore } from '../../application/useEmergencyStore';
 export function Sidebar() {
   const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen } = useEmergencyStore();
 
-  const filteredReports = reports.filter(report => {
+  const filteredReports = [...reports].filter(report => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'sin_reportes') return false; 
     return report.status === activeFilter;
+  }).sort((a, b) => {
+    const statusOrder: Record<string, number> = { 'requiere_ayuda': 1, 'en_proceso': 2, 'atendidos': 3 };
+    return statusOrder[a.status] - statusOrder[b.status];
   });
 
   const getStatusColor = (status: string) => {
@@ -136,12 +139,20 @@ export function Sidebar() {
               </div>
 
               {report.status !== 'atendidos' && (
-                <div className="mt-3 pt-3 border-t border-slate-100">
+                <div className="mt-3 pt-3 border-t border-slate-100 flex gap-2">
+                  {report.status === 'requiere_ayuda' && (
+                    <button 
+                      onClick={() => updateReportStatus(report.id, 'en_proceso')}
+                      className="flex-1 text-[10px] sm:text-xs py-2 rounded font-bold transition-colors bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200"
+                    >
+                      EN PROCESO
+                    </button>
+                  )}
                   <button 
                     onClick={() => updateReportStatus(report.id, 'atendidos')}
-                    className="w-full text-xs py-2 rounded font-bold transition-colors bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+                    className="flex-1 text-[10px] sm:text-xs py-2 rounded font-bold transition-colors bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
                   >
-                    Ya se atendió
+                    YA SE ATENDIÓ
                   </button>
                 </div>
               )}

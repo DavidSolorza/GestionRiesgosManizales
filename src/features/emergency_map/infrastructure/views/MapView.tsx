@@ -106,15 +106,28 @@ export function MapView() {
                   Tel: <a href={`tel:${sanitizeHTML(report.reporterPhone)}`} className="text-brand-600">{sanitizeHTML(report.reporterPhone)}</a>
                 </div>
                 {report.status !== 'atendidos' && (
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      updateReportStatus(report.id, 'atendidos');
-                    }}
-                    className="mt-1 w-full text-[10px] font-bold py-1.5 rounded bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors"
-                  >
-                    YA SE ATENDIÓ
-                  </button>
+                  <div className="mt-2 flex gap-1">
+                    {report.status === 'requiere_ayuda' && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateReportStatus(report.id, 'en_proceso');
+                        }}
+                        className="flex-1 text-[9px] font-bold py-1.5 rounded bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 transition-colors"
+                      >
+                        EN PROCESO
+                      </button>
+                    )}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateReportStatus(report.id, 'atendidos');
+                      }}
+                      className="flex-1 text-[9px] font-bold py-1.5 rounded bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors"
+                    >
+                      YA SE ATENDIÓ
+                    </button>
+                  </div>
                 )}
               </div>
             </Popup>

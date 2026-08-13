@@ -1,45 +1,75 @@
-import { ChevronDown, Plus, Heart, LayoutDashboard, HelpCircle, ShieldAlert } from 'lucide-react';
+import { Plus, Heart, LayoutDashboard, HelpCircle, MapPin, Loader2 } from 'lucide-react';
 import { useEmergencyStore } from '../../features/emergency_map/application/useEmergencyStore';
+import { useState } from 'react';
 
 export function TopNavbar() {
   const { 
     showToast, 
     setDashboardOpen, 
     setHelpOpen, 
-    setOfferFormOpen, 
-    setAdminLoginOpen,
-    isAdmin 
+    setOfferFormOpen,
+    selectLocation 
   } = useEmergencyStore();
 
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleReportWithLocation = () => {
+    if (!navigator.geolocation) {
+      showToast('Tu navegador no soporta geolocalización. Haz clic en el mapa manualmente.');
+      return;
+    }
+
+    setIsLocating(true);
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setIsLocating(false);
+        selectLocation({ 
+          lat: position.coords.latitude, 
+          lng: position.coords.longitude 
+        });
+        showToast('Ubicación obtenida correctamente. Completa tu reporte.');
+      },
+      (error) => {
+        setIsLocating(false);
+        console.error("Error obteniendo ubicación:", error);
+        showToast('No pudimos acceder a tu ubicación. Por favor, haz clic directamente en el mapa.');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   return (
-    <header className="absolute top-0 left-0 right-0 z-[1000] bg-white border-b border-slate-200 shadow-sm h-[60px] flex items-center px-4 justify-between">
+    <header className="absolute top-0 left-0 right-0 z-[1000] bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm h-[60px] flex items-center px-6 justify-between">
       
       {/* Lado izquierdo */}
-      <div className="flex items-center gap-4">
-        {/* Dropdown de ubicación */}
-        <button 
-          className="flex items-center gap-2 px-4 py-1.5 border border-brand-600 text-brand-700 rounded-full font-semibold text-sm hover:bg-brand-50 transition-colors"
-          onClick={() => showToast('Actualmente solo disponible para Manizales y alrededores.')}
-        >
-          Manizales y alrededores
-          <ChevronDown className="w-4 h-4" />
-        </button>
+      <div className="flex items-center gap-6">
+        
+        {/* Logo / Título sutil */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-md shadow-brand-200">
+            <Heart className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-black text-slate-800 tracking-tight text-lg hidden sm:block">
+            Gestión<span className="text-brand-600">Riesgos</span>
+          </span>
+        </div>
 
-        {/* Botón Reportar */}
-        <button 
-          className="flex items-center gap-2 px-4 py-1.5 bg-brand-600 text-white rounded-full font-semibold text-sm hover:bg-brand-700 transition-colors shadow-sm"
-          onClick={() => showToast('Por favor, haz clic en el mapa para seleccionar la ubicación exacta de la emergencia.')}
-        >
-          <Plus className="w-4 h-4" />
-          Reportar necesidad
-        </button>
+        {/* Separador */}
+        <div className="w-px h-6 bg-slate-200 hidden md:block"></div>
+
+        {/* Indicador de Ubicación */}
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100/80 rounded-full text-slate-600">
+          <MapPin className="w-4 h-4 text-brand-500" />
+          <span className="font-medium text-sm">Manizales y alrededores</span>
+        </div>
       </div>
 
-      {/* Lado derecho */}
-      <div className="flex items-center gap-3">
+      {/* Lado derecho (Acciones) */}
+      <div className="flex items-center gap-2">
         <button 
           onClick={() => setOfferFormOpen(true)}
-          className="flex items-center gap-2 px-4 py-1.5 border border-slate-200 text-slate-700 rounded-full font-medium text-sm hover:bg-slate-50 transition-colors"
+          className="hidden sm:flex items-center gap-2 px-4 py-2 text-slate-600 rounded-full font-medium text-sm hover:bg-slate-100 transition-colors"
         >
           <Heart className="w-4 h-4 text-orange-500" />
           Ofrecimientos
@@ -47,7 +77,7 @@ export function TopNavbar() {
 
         <button 
           onClick={() => setDashboardOpen(true)}
-          className="flex items-center gap-2 px-4 py-1.5 border border-slate-200 text-slate-700 rounded-full font-medium text-sm hover:bg-slate-50 transition-colors"
+          className="hidden sm:flex items-center gap-2 px-4 py-2 text-slate-600 rounded-full font-medium text-sm hover:bg-slate-100 transition-colors"
         >
           <LayoutDashboard className="w-4 h-4 text-green-500" />
           Dashboard
@@ -55,18 +85,27 @@ export function TopNavbar() {
 
         <button 
           onClick={() => setHelpOpen(true)}
-          className="flex items-center gap-2 px-4 py-1.5 border border-slate-200 text-slate-700 rounded-full font-medium text-sm hover:bg-slate-50 transition-colors"
+          className="hidden sm:flex items-center gap-2 px-4 py-2 text-slate-600 rounded-full font-medium text-sm hover:bg-slate-100 transition-colors"
         >
           <HelpCircle className="w-4 h-4 text-red-500" />
           Ayuda
         </button>
 
+        {/* Separador */}
+        <div className="w-px h-6 bg-slate-200 mx-2 hidden sm:block"></div>
+
+        {/* Botón Principal (Reportar con GPS) */}
         <button 
-          onClick={() => setAdminLoginOpen(true)}
-          className={`flex items-center gap-2 px-4 py-1.5 border rounded-full font-medium text-sm transition-colors ${isAdmin ? 'bg-brand-50 border-brand-200 text-brand-700' : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+          onClick={handleReportWithLocation}
+          disabled={isLocating}
+          className="flex items-center gap-2 px-5 py-2 bg-brand-600 text-white rounded-full font-semibold text-sm hover:bg-brand-700 active:scale-95 transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:active:scale-100"
         >
-          <ShieldAlert className={`w-4 h-4 ${isAdmin ? 'text-brand-600' : 'text-slate-400'}`} />
-          {isAdmin ? 'Admin Activo' : 'Panel admin'}
+          {isLocating ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Plus className="w-4 h-4" />
+          )}
+          <span>Reportar necesidad</span>
         </button>
       </div>
     </header>

@@ -55,24 +55,6 @@ export function Sidebar() {
             </button>
           </div>
           
-        {/* Mobile Quick Actions (Only visible on lg:hidden) */}
-        <div className="flex gap-2 mb-4 lg:hidden">
-          <button 
-            onClick={() => { setOfferFormOpen(true); setSidebarOpen(false); }}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-orange-50 text-orange-600 rounded-lg font-medium text-sm border border-orange-100 active:scale-95 transition-transform"
-          >
-            <Heart className="w-4 h-4" />
-            Ofrecimientos
-          </button>
-          <button 
-            onClick={() => { setHelpOpen(true); setSidebarOpen(false); }}
-            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 text-slate-600 rounded-lg font-medium text-sm border border-slate-200 active:scale-95 transition-transform"
-          >
-            <HelpCircle className="w-4 h-4" />
-            Ayuda
-          </button>
-        </div>
-        
         <div className="flex flex-wrap gap-2">
           {[
             { id: 'all', label: 'Todos' },

@@ -29,7 +29,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-[400px] h-full bg-white border-l border-slate-200 shadow-xl flex flex-col z-[500] absolute right-0 top-0 pt-[60px] transition-all">
+    <aside className="w-full lg:w-[400px] h-[45vh] lg:h-full bg-white border-t lg:border-t-0 lg:border-l border-slate-200 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] lg:shadow-xl flex flex-col z-[500] absolute right-0 bottom-0 lg:top-0 lg:bottom-auto pt-0 lg:pt-[60px] transition-all">
       <div className="p-4 border-b border-slate-100 bg-slate-50/50">
         <h2 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-brand-600" />

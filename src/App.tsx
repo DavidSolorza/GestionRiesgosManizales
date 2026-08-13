@@ -20,8 +20,8 @@ function App() {
     <div className="w-full h-screen font-sans relative overflow-hidden bg-slate-50">
       <TopNavbar />
       
-      {/* Map occupies the remaining screen space to the left of the sidebar */}
-      <main className="w-full h-full pt-[60px] pr-[400px]">
+      {/* Map occupies the remaining screen space to the left of the sidebar on desktop, and top on mobile */}
+      <main className="w-full h-full pt-[60px] lg:pr-[400px] pb-[45vh] lg:pb-0">
         <MapView />
       </main>
 

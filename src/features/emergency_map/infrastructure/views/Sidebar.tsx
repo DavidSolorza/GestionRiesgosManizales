@@ -1,8 +1,8 @@
-import { Phone, CheckCircle2, AlertCircle, X, Heart, HelpCircle } from 'lucide-react';
+import { Phone, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { useEmergencyStore } from '../../application/useEmergencyStore';
 
 export function Sidebar() {
-  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen, setOfferFormOpen, setHelpOpen } = useEmergencyStore();
+  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen } = useEmergencyStore();
 
   const filteredReports = reports.filter(report => {
     if (activeFilter === 'all') return true;

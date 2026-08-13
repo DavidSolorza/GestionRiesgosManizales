@@ -1,8 +1,8 @@
-import { Phone, CheckCircle2, AlertCircle, X } from 'lucide-react';
+import { Phone, CheckCircle2, AlertCircle, X, Heart, HelpCircle } from 'lucide-react';
 import { useEmergencyStore } from '../../application/useEmergencyStore';
 
 export function Sidebar() {
-  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen } = useEmergencyStore();
+  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen, setOfferFormOpen, setHelpOpen } = useEmergencyStore();
 
   const filteredReports = reports.filter(report => {
     if (activeFilter === 'all') return true;
@@ -45,7 +45,7 @@ export function Sidebar() {
           <div className="flex justify-between items-center mb-3">
             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-brand-600" />
-              Filtros de Estado
+              Reportes de Emergencia
             </h2>
             <button 
               onClick={() => setSidebarOpen(false)}
@@ -54,6 +54,24 @@ export function Sidebar() {
               <X className="w-5 h-5" />
             </button>
           </div>
+          
+        {/* Mobile Quick Actions (Only visible on lg:hidden) */}
+        <div className="flex gap-2 mb-4 lg:hidden">
+          <button 
+            onClick={() => { setOfferFormOpen(true); setSidebarOpen(false); }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-orange-50 text-orange-600 rounded-lg font-medium text-sm border border-orange-100 active:scale-95 transition-transform"
+          >
+            <Heart className="w-4 h-4" />
+            Ofrecimientos
+          </button>
+          <button 
+            onClick={() => { setHelpOpen(true); setSidebarOpen(false); }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 text-slate-600 rounded-lg font-medium text-sm border border-slate-200 active:scale-95 transition-transform"
+          >
+            <HelpCircle className="w-4 h-4" />
+            Ayuda
+          </button>
+        </div>
         
         <div className="flex flex-wrap gap-2">
           {[

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Heart, Loader2 } from 'lucide-react';
 import { useEmergencyStore } from '../../features/emergency_map/application/useEmergencyStore';
 import type { OfferCategory } from '../../features/emergency_map/domain/Offer';
+import { Captcha } from './Captcha';
 
 export function OfferFormModal() {
   const { isOfferFormOpen, setOfferFormOpen, submitOffer, isSubmitting } = useEmergencyStore();
@@ -12,19 +13,18 @@ export function OfferFormModal() {
   const [description, setDescription] = useState('');
 
   // CAPTCHA State
-  const [num1] = useState(Math.floor(Math.random() * 10) + 1);
-  const [num2] = useState(Math.floor(Math.random() * 10) + 1);
-  const [captchaAnswer, setCaptchaAnswer] = useState('');
-  const [captchaError, setCaptchaError] = useState(false);
+  const [isCaptchaValid, setIsCaptchaValid] = useState(false);
+  const [showCaptchaError, setShowCaptchaError] = useState(false);
 
   if (!isOfferFormOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (parseInt(captchaAnswer) !== num1 + num2) {
-      setCaptchaError(true);
+    if (!isCaptchaValid) {
+      setShowCaptchaError(true);
       return;
     }
+    setShowCaptchaError(false);
 
     if (!name || !phone || !description) return;
 
@@ -40,7 +40,7 @@ export function OfferFormModal() {
     setPhone('');
     setCategory('Alimentos');
     setDescription('');
-    setCaptchaAnswer('');
+    setIsCaptchaValid(false);
   };
 
   return (
@@ -119,22 +119,11 @@ export function OfferFormModal() {
               />
             </div>
 
-            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Verificación de seguridad: ¿Cuánto es {num1} + {num2}? <span className="text-alert-600">*</span>
-              </label>
-              <input 
-                type="number" 
-                required
-                placeholder="Tu respuesta"
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"
-                value={captchaAnswer}
-                onChange={(e) => {
-                  setCaptchaAnswer(e.target.value);
-                  setCaptchaError(false);
-                }}
-              />
-              {captchaError && <p className="text-alert-600 text-xs mt-1 font-medium">Respuesta incorrecta. Intenta de nuevo.</p>}
+            <div>
+              <Captcha onVerify={setIsCaptchaValid} />
+              {showCaptchaError && !isCaptchaValid && (
+                <p className="text-alert-600 text-xs mt-1 font-medium">Por favor completa la verificación de seguridad correctamente.</p>
+              )}
             </div>
           </div>
           

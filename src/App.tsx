@@ -4,7 +4,7 @@ import { TopNavbar } from './components/ui/TopNavbar';
 
 function App() {
   return (
-    <div className="w-full h-screen font-sans flex relative overflow-hidden bg-slate-50">
+    <div className="w-full h-screen font-sans relative overflow-hidden bg-slate-50">
       <TopNavbar />
       
       {/* Map occupies the remaining screen space to the left of the sidebar */}

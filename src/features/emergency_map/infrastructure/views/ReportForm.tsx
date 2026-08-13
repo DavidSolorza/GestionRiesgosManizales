@@ -42,7 +42,7 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
 
   return (
     <div className="absolute top-4 right-4 z-[1000] w-full max-w-sm">
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-white/40 p-5 animate-in slide-in-from-right-8 fade-in duration-300 max-h-[85vh] overflow-y-auto custom-scrollbar">
+      <div className="bg-white/95 rounded-2xl shadow-2xl border border-white/40 p-5 animate-in slide-in-from-right-8 fade-in duration-300 max-h-[85vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2 text-brand-700">
             <MapPin className="w-5 h-5" />

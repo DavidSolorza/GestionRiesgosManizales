@@ -72,7 +72,7 @@ export function MapView() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-slate-100">
+    <div className="relative w-full h-full overflow-hidden bg-slate-100">
       <MapContainer 
         center={MANIZALES_CENTER} 
         zoom={14} 

@@ -28,7 +28,7 @@ function App() {
       {/* Floating Action Button only on mobile to open Sidebar */}
       <button 
         onClick={() => setSidebarOpen(true)}
-        className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[400] bg-slate-900 text-white px-6 py-3 rounded-full font-semibold shadow-2xl flex items-center gap-2 active:scale-95 transition-all"
+        className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] bg-slate-900 text-white px-6 py-3 rounded-full font-semibold shadow-2xl flex items-center gap-2 active:scale-95 transition-all"
       >
         <span>Ver </span>
         <span className="bg-brand-500 px-2 py-0.5 rounded text-xs font-bold">{reports.length}</span>

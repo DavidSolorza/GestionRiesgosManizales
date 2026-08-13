@@ -36,7 +36,7 @@ const LocationMarker = () => {
 const MANIZALES_CENTER = { lat: 5.06889, lng: -75.51738 };
 
 export function MapView() {
-  const { reports, fetchReports, selectedLocation, clearLocation, submitReport, isSubmitting, activeFilter } = useEmergencyStore();
+  const { reports, fetchReports, selectedLocation, clearLocation, submitReport, isSubmitting, activeFilter, updateReportStatus } = useEmergencyStore();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -105,6 +105,17 @@ export function MapView() {
                   <br/>
                   Tel: <a href={`tel:${sanitizeHTML(report.reporterPhone)}`} className="text-brand-600">{sanitizeHTML(report.reporterPhone)}</a>
                 </div>
+                {report.status !== 'atendidos' && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateReportStatus(report.id, 'atendidos');
+                    }}
+                    className="mt-1 w-full text-[10px] font-bold py-1.5 rounded bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors"
+                  >
+                    YA SE ATENDIÓ
+                  </button>
+                )}
               </div>
             </Popup>
           </Marker>

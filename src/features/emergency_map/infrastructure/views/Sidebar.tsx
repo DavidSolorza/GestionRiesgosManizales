@@ -135,6 +135,17 @@ export function Sidebar() {
                 </a>
               </div>
 
+              {report.status !== 'atendidos' && (
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                  <button 
+                    onClick={() => updateReportStatus(report.id, 'atendidos')}
+                    className="w-full text-xs py-2 rounded font-bold transition-colors bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+                  >
+                    Ya se atendió
+                  </button>
+                </div>
+              )}
+
               {isAdmin && (
                 <div className="mt-3 pt-3 border-t border-slate-100">
                   <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">Acciones Admin</p>
@@ -149,7 +160,7 @@ export function Sidebar() {
                       onClick={() => updateReportStatus(report.id, 'atendidos')}
                       className={`flex-1 text-xs py-1.5 rounded font-medium transition-colors ${report.status === 'atendidos' ? 'bg-green-100 text-green-700 cursor-default' : 'bg-slate-100 text-slate-600 hover:bg-green-50 hover:text-green-600'}`}
                     >
-                      Atendido
+                      Atendido (Silencioso)
                     </button>
                   </div>
                 </div>

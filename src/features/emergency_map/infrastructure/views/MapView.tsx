@@ -40,7 +40,7 @@ export function MapView() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [formData, setFormData] = useState<{title: string, description: string, severity: EmergencySeverity} | null>(null);
+  const [formData, setFormData] = useState<{title: string, description: string, severity: EmergencySeverity, reporterName: string, reporterPhone: string} | null>(null);
 
   useEffect(() => {
     fetchReports();
@@ -90,7 +90,12 @@ export function MapView() {
             <Popup>
               <div className="p-1">
                 <h3 className="font-bold text-slate-800 mb-1">{sanitizeHTML(report.title)}</h3>
-                <p className="text-sm text-slate-600 mb-2">{sanitizeHTML(report.description)}</p>
+                <p className="text-sm text-slate-600 mb-1">{sanitizeHTML(report.description)}</p>
+                <div className="mb-2 text-xs text-slate-500 font-medium">
+                  Reportado por: <span className="text-slate-700">{sanitizeHTML(report.reporterName)}</span>
+                  <br/>
+                  Tel: <a href={`tel:${sanitizeHTML(report.reporterPhone)}`} className="text-brand-600">{sanitizeHTML(report.reporterPhone)}</a>
+                </div>
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full uppercase
                   ${report.severity === 'critical' ? 'bg-alert-100 text-alert-600' : 
                     report.severity === 'high' ? 'bg-orange-100 text-orange-600' :

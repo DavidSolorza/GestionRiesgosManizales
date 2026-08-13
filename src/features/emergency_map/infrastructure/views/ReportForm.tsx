@@ -4,13 +4,15 @@ import type { EmergencySeverity } from '../../domain/EmergencyReport';
 
 interface ReportFormProps {
   onClose: () => void;
-  onSubmit: (data: { title: string; description: string; severity: EmergencySeverity }) => void;
+  onSubmit: (data: { title: string; description: string; severity: EmergencySeverity; reporterName: string; reporterPhone: string }) => void;
 }
 
 export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [severity, setSeverity] = useState<EmergencySeverity>('medium');
+  const [reporterName, setReporterName] = useState('');
+  const [reporterPhone, setReporterPhone] = useState('');
 
   // Prevención de XSS básica eliminando tags
   const sanitizeInput = (input: string) => {
@@ -21,32 +23,62 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
     e.preventDefault();
     const cleanTitle = sanitizeInput(title.trim());
     const cleanDescription = sanitizeInput(description.trim());
+    const cleanName = sanitizeInput(reporterName.trim());
+    const cleanPhone = sanitizeInput(reporterPhone.trim());
 
-    if (!cleanTitle) return;
+    if (!cleanTitle || !cleanName || !cleanPhone) return;
 
     onSubmit({
       title: cleanTitle,
       description: cleanDescription,
       severity,
+      reporterName: cleanName,
+      reporterPhone: cleanPhone,
     });
   };
 
   return (
     <div className="absolute top-4 right-4 z-[1000] w-full max-w-sm">
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-white/40 p-5 animate-in slide-in-from-right-8 fade-in duration-300">
+      <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-white/40 p-5 animate-in slide-in-from-right-8 fade-in duration-300 max-h-[85vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2 text-brand-700">
             <MapPin className="w-5 h-5" />
             <h3 className="font-semibold">Reportar Emergencia</h3>
           </div>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-700 p-1 rounded-full hover:bg-white/50 transition-colors">
+          <button type="button" onClick={onClose} className="text-slate-500 hover:text-slate-700 p-1 rounded-full hover:bg-white/50 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Título del Evento</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Nombre Completo <span className="text-alert-600">*</span></label>
+            <input 
+              type="text" 
+              required
+              maxLength={100}
+              placeholder="Ej. Juan Pérez"
+              className="w-full px-3 py-2 bg-white/70 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all placeholder:text-slate-400 text-sm"
+              value={reporterName}
+              onChange={(e) => setReporterName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Teléfono de Contacto <span className="text-alert-600">*</span></label>
+            <input 
+              type="tel" 
+              required
+              maxLength={15}
+              placeholder="Ej. 300 123 4567"
+              className="w-full px-3 py-2 bg-white/70 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all placeholder:text-slate-400 text-sm"
+              value={reporterPhone}
+              onChange={(e) => setReporterPhone(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Título del Evento <span className="text-alert-600">*</span></label>
             <input 
               type="text" 
               required

@@ -69,10 +69,14 @@ export function Sidebar() {
                 </span>
               </div>
               
-              <p className="text-sm text-slate-600 mb-3 line-clamp-2 leading-snug">
+              <p className="text-sm text-slate-600 mb-2 line-clamp-2 leading-snug">
                 {report.description}
               </p>
               
+              <div className="mb-3 text-xs text-slate-500">
+                <span className="font-semibold text-slate-700">{report.reporterName}</span> • <a href={`tel:${report.reporterPhone}`} className="text-brand-600 hover:underline">{report.reporterPhone}</a>
+              </div>
+
               <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
                 <div className="flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5" />

@@ -11,6 +11,8 @@ export interface EmergencyReport {
   description: string;
   severity: EmergencySeverity;
   coordinates: Coordinates;
+  reporterName: string;
+  reporterPhone: string;
   createdAt: string;
 }
 

@@ -36,11 +36,11 @@ const LocationMarker = () => {
 const MANIZALES_CENTER = { lat: 5.06889, lng: -75.51738 };
 
 export function MapView() {
-  const { reports, fetchReports, selectedLocation, clearLocation, submitReport, isSubmitting } = useEmergencyStore();
+  const { reports, fetchReports, selectedLocation, clearLocation, submitReport, isSubmitting, activeFilter } = useEmergencyStore();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [formData, setFormData] = useState<{title: string, description: string, severity: EmergencySeverity, reporterName: string, reporterPhone: string} | null>(null);
+  const [formData, setFormData] = useState<{title: string, description: string, severity: EmergencySeverity, reporterName: string, reporterPhone: string, needs: string, status: any} | null>(null);
 
   useEffect(() => {
     fetchReports();
@@ -85,24 +85,26 @@ export function MapView() {
         />
         <LocationMarker />
         
-        {reports.map((report) => (
+        {reports.filter(r => activeFilter === 'all' || r.status === activeFilter).map((report) => (
           <Marker key={report.id} position={report.coordinates}>
             <Popup>
               <div className="p-1">
+                <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-2 ${
+                  report.status === 'requiere_ayuda' ? 'bg-alert-100 text-alert-700' :
+                  report.status === 'en_proceso' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
+                }`}>
+                  {report.status === 'requiere_ayuda' ? 'REQUIERE AYUDA' : report.status === 'en_proceso' ? 'EN PROCESO' : 'ATENDIDO'}
+                </span>
                 <h3 className="font-bold text-slate-800 mb-1">{sanitizeHTML(report.title)}</h3>
                 <p className="text-sm text-slate-600 mb-1">{sanitizeHTML(report.description)}</p>
+                <div className="text-sm text-brand-600 font-medium mb-2">
+                  Requiere: {sanitizeHTML(report.needs || 'Otros')}
+                </div>
                 <div className="mb-2 text-xs text-slate-500 font-medium">
                   Reportado por: <span className="text-slate-700">{sanitizeHTML(report.reporterName)}</span>
                   <br/>
                   Tel: <a href={`tel:${sanitizeHTML(report.reporterPhone)}`} className="text-brand-600">{sanitizeHTML(report.reporterPhone)}</a>
                 </div>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full uppercase
-                  ${report.severity === 'critical' ? 'bg-alert-100 text-alert-600' : 
-                    report.severity === 'high' ? 'bg-orange-100 text-orange-600' :
-                    report.severity === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                    'bg-success-100 text-success-600'}`}>
-                  {report.severity}
-                </span>
               </div>
             </Popup>
           </Marker>

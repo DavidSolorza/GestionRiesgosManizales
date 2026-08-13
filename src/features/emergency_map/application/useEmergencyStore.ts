@@ -7,6 +7,8 @@ interface EmergencyState {
   selectedLocation: Coordinates | null;
   isSubmitting: boolean;
   isLoading: boolean;
+  activeFilter: 'all' | 'requiere_ayuda' | 'en_proceso' | 'atendidos' | 'sin_reportes';
+  setFilter: (filter: 'all' | 'requiere_ayuda' | 'en_proceso' | 'atendidos' | 'sin_reportes') => void;
   selectLocation: (coords: Coordinates) => void;
   clearLocation: () => void;
   fetchReports: () => Promise<void>;
@@ -18,7 +20,10 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   selectedLocation: null,
   isSubmitting: false,
   isLoading: false,
+  activeFilter: 'all',
 
+  setFilter: (filter) => set({ activeFilter: filter }),
+  
   selectLocation: (coords) => set({ selectedLocation: coords }),
   clearLocation: () => set({ selectedLocation: null }),
 

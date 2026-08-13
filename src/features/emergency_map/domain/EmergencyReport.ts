@@ -4,12 +4,15 @@ export interface Coordinates {
 }
 
 export type EmergencySeverity = 'low' | 'medium' | 'high' | 'critical';
+export type EmergencyStatus = 'requiere_ayuda' | 'en_proceso' | 'atendidos';
 
 export interface EmergencyReport {
   id: string;
   title: string;
   description: string;
   severity: EmergencySeverity;
+  status: EmergencyStatus;
+  needs: string;
   coordinates: Coordinates;
   reporterName: string;
   reporterPhone: string;

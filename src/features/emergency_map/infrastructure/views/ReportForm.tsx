@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { X, MapPin } from 'lucide-react';
-import type { EmergencySeverity } from '../../domain/EmergencyReport';
+import type { EmergencySeverity, EmergencyStatus } from '../../domain/EmergencyReport';
 
 interface ReportFormProps {
   onClose: () => void;
-  onSubmit: (data: { title: string; description: string; severity: EmergencySeverity; reporterName: string; reporterPhone: string }) => void;
+  onSubmit: (data: { title: string; description: string; severity: EmergencySeverity; reporterName: string; reporterPhone: string; needs: string; status: EmergencyStatus }) => void;
 }
 
 export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
@@ -13,6 +13,7 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
   const [severity, setSeverity] = useState<EmergencySeverity>('medium');
   const [reporterName, setReporterName] = useState('');
   const [reporterPhone, setReporterPhone] = useState('');
+  const [needs, setNeeds] = useState('Alimentos');
 
   // Prevención de XSS básica eliminando tags
   const sanitizeInput = (input: string) => {
@@ -34,6 +35,8 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
       severity,
       reporterName: cleanName,
       reporterPhone: cleanPhone,
+      needs,
+      status: 'requiere_ayuda'
     });
   };
 
@@ -88,6 +91,21 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">¿Qué se necesita? <span className="text-alert-600">*</span></label>
+            <select 
+              className="w-full px-3 py-2 bg-white/70 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-sm"
+              value={needs}
+              onChange={(e) => setNeeds(e.target.value)}
+            >
+              <option value="Alimentos">Alimentos</option>
+              <option value="Agua">Agua potable</option>
+              <option value="Refugio">Refugio temporal</option>
+              <option value="Atención Médica">Atención Médica</option>
+              <option value="Otro">Otro</option>
+            </select>
           </div>
 
           <div>

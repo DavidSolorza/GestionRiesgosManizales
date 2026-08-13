@@ -1,6 +1,11 @@
 import { MapView } from './features/emergency_map/infrastructure/views/MapView';
 import { Sidebar } from './features/emergency_map/infrastructure/views/Sidebar';
 import { TopNavbar } from './components/ui/TopNavbar';
+import { AdminLoginModal } from './components/ui/AdminLoginModal';
+import { DashboardModal } from './components/ui/DashboardModal';
+import { HelpModal } from './components/ui/HelpModal';
+import { OfferFormModal } from './components/ui/OfferFormModal';
+import { GlobalToast } from './components/ui/GlobalToast';
 
 function App() {
   return (
@@ -13,6 +18,13 @@ function App() {
       </main>
 
       <Sidebar />
+      
+      {/* Modals and Global UI */}
+      <AdminLoginModal />
+      <DashboardModal />
+      <HelpModal />
+      <OfferFormModal />
+      <GlobalToast />
     </div>
   );
 }

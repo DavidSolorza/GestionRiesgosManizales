@@ -2,120 +2,139 @@ import { Phone, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useEmergencyStore } from '../../application/useEmergencyStore';
 
 export function Sidebar() {
-  const { reports, isLoading, activeFilter, setFilter } = useEmergencyStore();
+  const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus } = useEmergencyStore();
 
   const filteredReports = reports.filter(report => {
     if (activeFilter === 'all') return true;
-    if (activeFilter === 'sin_reportes') return false; // Or logic if there are no reports in an area, but for now we hide
+    if (activeFilter === 'sin_reportes') return false; 
     return report.status === activeFilter;
   });
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'requiere_ayuda': return 'bg-alert-100 text-alert-700 border-alert-200';
+      case 'en_proceso': return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'atendidos': return 'bg-green-100 text-green-700 border-green-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'requiere_ayuda': return 'REQUIERE AYUDA';
+      case 'en_proceso': return 'EN PROCESO';
+      case 'atendidos': return 'ATENDIDO';
+      default: return status;
+    }
+  };
+
   return (
     <aside className="w-[400px] h-full bg-white border-l border-slate-200 shadow-xl flex flex-col z-[500] absolute right-0 top-0 pt-[60px] transition-all">
-      <div className="p-5 border-b border-slate-100">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xl font-bold text-slate-800">Sectores reportados</h2>
-          <span className="bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-full text-sm">
-            {reports.length}
-          </span>
-        </div>
-
-        {/* Filters */}
+      <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+        <h2 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 text-brand-600" />
+          Filtros de Estado
+        </h2>
+        
         <div className="flex flex-wrap gap-2">
-          <button 
-            onClick={() => setFilter('all')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
-              activeFilter === 'all' 
-                ? 'bg-brand-600 text-white border-brand-600' 
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            Todos
-          </button>
-          
-          <button 
-            onClick={() => setFilter('requiere_ayuda')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 transition-colors ${
-              activeFilter === 'requiere_ayuda'
-                ? 'bg-red-50 text-alert-700 border-alert-200'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <div className="w-2.5 h-2.5 rounded-sm bg-alert-600"></div>
-            Requieren ayuda
-          </button>
-          
-          <button 
-            onClick={() => setFilter('en_proceso')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 transition-colors ${
-              activeFilter === 'en_proceso'
-                ? 'bg-orange-50 text-orange-700 border-orange-200'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <div className="w-2.5 h-2.5 rounded-sm bg-orange-500"></div>
-            En proceso
-          </button>
-          
-          <button 
-            onClick={() => setFilter('atendidos')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 transition-colors ${
-              activeFilter === 'atendidos'
-                ? 'bg-green-50 text-green-700 border-green-200'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-            Atendidos
-          </button>
-
-          <button 
-            onClick={() => setFilter('sin_reportes')}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 transition-colors ${
-              activeFilter === 'sin_reportes'
-                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <div className="w-2.5 h-2.5 rounded-sm bg-purple-400"></div>
-            Sin reportes
-          </button>
+          {[
+            { id: 'all', label: 'Todos' },
+            { id: 'requiere_ayuda', label: 'Requieren ayuda' },
+            { id: 'en_proceso', label: 'En proceso' },
+            { id: 'atendidos', label: 'Atendidos' },
+            { id: 'sin_reportes', label: 'Sin reportes' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setFilter(tab.id as any)}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${
+                activeFilter === tab.id 
+                  ? 'bg-slate-800 text-white shadow-md' 
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-slate-50">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
         {isLoading ? (
-          <div className="flex justify-center py-10">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
+          <div className="flex flex-col items-center justify-center h-40 text-slate-400 space-y-2">
+            <div className="w-8 h-8 border-4 border-slate-200 border-t-brand-500 rounded-full animate-spin"></div>
+            <p className="text-sm font-medium">Cargando reportes...</p>
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="text-center py-10 text-slate-400">
-            <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No hay emergencias para esta categoría.</p>
+          <div className="flex flex-col items-center justify-center h-40 text-slate-400 text-center px-4">
+            <CheckCircle2 className="w-12 h-12 mb-3 text-slate-300" />
+            <p className="font-medium text-slate-600">No hay reportes en esta categoría</p>
+            <p className="text-sm mt-1">Todo está tranquilo por aquí.</p>
           </div>
         ) : (
-          filteredReports.map(report => (
+          filteredReports.map((report) => (
             <div 
               key={report.id} 
-              className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+              className={`bg-white rounded-xl shadow-sm border p-4 transition-all hover:shadow-md ${
+                report.status === 'requiere_ayuda' ? 'border-l-4 border-l-alert-500 border-y-slate-200 border-r-slate-200' : 
+                report.status === 'en_proceso' ? 'border-l-4 border-l-orange-500 border-y-slate-200 border-r-slate-200' :
+                'border-l-4 border-l-green-500 border-y-slate-200 border-r-slate-200'
+              }`}
             >
-              <div className="mb-3">
-                <span className="inline-block bg-alert-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-2">
-                  {report.status === 'requiere_ayuda' ? 'REQUIERE AYUDA' : report.status === 'en_proceso' ? 'EN PROCESO' : 'ATENDIDO'}
+              <div className="flex justify-between items-start mb-2">
+                <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusColor(report.status)}`}>
+                  {getStatusLabel(report.status)}
                 </span>
-                <h3 className="font-bold text-slate-800 text-lg leading-tight">
-                  {report.title}
-                </h3>
+                <span className="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-0.5 rounded-full">
+                  Hace {Math.floor(Math.random() * 60) + 1} min
+                </span>
               </div>
               
-              <div className="text-sm text-brand-600 font-medium mb-1">
-                Requiere: {report.needs || 'Otros'}
+              <h3 className="font-bold text-slate-800 text-sm mb-1 line-clamp-1">{report.title}</h3>
+              
+              <div className="text-brand-600 text-xs font-semibold mb-2 bg-brand-50 inline-block px-2 py-1 rounded">
+                Necesita: {report.needs || 'Otros'}
               </div>
               
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <Phone className="w-3.5 h-3.5 text-alert-600" />
-                <span>{report.reporterName}</span>
+              <p className="text-slate-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                {report.description}
+              </p>
+              
+              <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                <div className="bg-white p-1.5 rounded-full shadow-sm">
+                  <Phone className="w-3.5 h-3.5 text-brand-500" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Reportado por</span>
+                  <span className="text-xs font-medium text-slate-700">{report.reporterName}</span>
+                </div>
+                <a 
+                  href={`tel:${report.reporterPhone}`}
+                  className="ml-auto text-xs font-bold text-brand-600 hover:text-brand-700 hover:underline"
+                >
+                  Llamar
+                </a>
               </div>
+
+              {isAdmin && (
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">Acciones Admin</p>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => updateReportStatus(report.id, 'en_proceso')}
+                      className={`flex-1 text-xs py-1.5 rounded font-medium transition-colors ${report.status === 'en_proceso' ? 'bg-orange-100 text-orange-700 cursor-default' : 'bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600'}`}
+                    >
+                      En proceso
+                    </button>
+                    <button 
+                      onClick={() => updateReportStatus(report.id, 'atendidos')}
+                      className={`flex-1 text-xs py-1.5 rounded font-medium transition-colors ${report.status === 'atendidos' ? 'bg-green-100 text-green-700 cursor-default' : 'bg-slate-100 text-slate-600 hover:bg-green-50 hover:text-green-600'}`}
+                    >
+                      Atendido
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         )}

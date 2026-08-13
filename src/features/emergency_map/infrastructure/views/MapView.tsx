@@ -85,8 +85,22 @@ export function MapView() {
         />
         <LocationMarker />
         
-        {reports.filter(r => activeFilter === 'all' || r.status === activeFilter).map((report) => (
-          <Marker key={report.id} position={report.coordinates}>
+        {reports.filter(r => activeFilter === 'all' || r.status === activeFilter).map((report) => {
+          
+          let markerColor = '#ef4444'; // Red for requiere_ayuda
+          if (report.status === 'en_proceso') markerColor = '#f97316';
+          else if (report.status === 'atendidos') markerColor = '#22c55e';
+
+          const customIcon = L.divIcon({
+            className: 'custom-status-icon',
+            html: `<div style="background-color: ${markerColor}; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12],
+            popupAnchor: [0, -12]
+          });
+
+          return (
+          <Marker key={report.id} position={report.coordinates} icon={customIcon}>
             <Popup>
               <div className="p-1">
                 <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider mb-2 ${
@@ -132,7 +146,7 @@ export function MapView() {
               </div>
             </Popup>
           </Marker>
-        ))}
+        )})}
       </MapContainer>
 
       {selectedLocation && !isModalOpen && (

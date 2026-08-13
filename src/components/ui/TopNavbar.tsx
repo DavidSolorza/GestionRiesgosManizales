@@ -1,4 +1,4 @@
-import { Plus, Heart, LayoutDashboard, HelpCircle, MapPin, Loader2 } from 'lucide-react';
+import { Plus, ShieldAlert, LayoutDashboard, HelpCircle, MapPin, Loader2, Heart } from 'lucide-react';
 import { useEmergencyStore } from '../../features/emergency_map/application/useEmergencyStore';
 import { useState } from 'react';
 
@@ -48,7 +48,7 @@ export function TopNavbar() {
         {/* Logo / Título sutil */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-md shadow-brand-200">
-            <Heart className="w-4 h-4 text-white" />
+            <ShieldAlert className="w-4 h-4 text-white" />
           </div>
           <span className="font-black text-slate-800 tracking-tight text-lg hidden sm:block">
             Gestión<span className="text-brand-600">Riesgos</span>

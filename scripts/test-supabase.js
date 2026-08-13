@@ -93,4 +93,4 @@ async function testSupabase() {
   }
 }
 
-testSupabase();
+//testSupabase();

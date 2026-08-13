@@ -105,7 +105,7 @@ export function TopNavbar() {
           ) : (
             <Plus className="w-4 h-4" />
           )}
-          <span>Reportar necesidad</span>
+          <span>Reportar <span className="hidden sm:inline">necesidad</span></span>
         </button>
       </div>
     </header>

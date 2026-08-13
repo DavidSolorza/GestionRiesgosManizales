@@ -56,3 +56,8 @@ graph TD
 ### ADR-004: Client-Side Rate Limiting
 - **Contexto:** Prevenir el doble envío (Double-submit) debido a la ansiedad o clicks compulsivos del usuario en estado de emergencia.
 - **Decisión:** Incorporar bloqueos de estado `isSubmitting` en Zustand y deshabilitar los botones de envío en la UI, acoplado a un `Toast` de confirmación.
+
+### ADR-005: Jerarquía Dinámica de Estados (Triaje)
+- **Contexto:** Los administradores y los propios reportantes requieren un control visual del progreso de una emergencia (Reportado -> En Proceso -> Atendido).
+- **Decisión:** Integrar mutaciones de estado (`updateReportStatus`) mediante PATCH de Supabase, que a su vez altera la UI y los marcadores de Leaflet de forma cromática (Rojo, Naranja, Verde) y descendente (sort by status).
+- **Consecuencias:** Permite un triaje efectivo en el Frontend sin sobrecargar el Backend con lógica de colas. La interfaz se vuelve altamente responsiva, autolimpiando el mapa de emergencias atendidas.

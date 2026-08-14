@@ -1,15 +1,24 @@
 import { httpClient } from '../../../core/http/HttpClient';
-import type { EmergencyReport } from '../domain/EmergencyReport';
+import type { EmergencyReport, EmergencySeverity, IEmergencyRepository } from '../domain/EmergencyReport';
 import type { HelpOffer } from '../domain/Offer';
 
-class SupabaseService {
+const VALID_SEVERITIES: EmergencySeverity[] = ['low', 'medium', 'high', 'critical'];
+
+const parseSeverity = (value: unknown): EmergencySeverity => {
+  if (typeof value === 'string' && VALID_SEVERITIES.includes(value as EmergencySeverity)) {
+    return value as EmergencySeverity;
+  }
+  return 'medium';
+};
+
+class SupabaseService implements IEmergencyRepository {
   async getReports(): Promise<EmergencyReport[]> {
     const data = await httpClient.get<any[]>('reports?order=created_at.desc');
     return data.map(item => ({
       id: item.id,
       title: item.title,
       description: item.description,
-      severity: 'high', // Dummy mapping if not in DB
+      severity: parseSeverity(item.severity),
       status: item.status,
       needs: item.needs,
       coordinates: {

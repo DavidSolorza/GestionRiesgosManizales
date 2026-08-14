@@ -120,10 +120,23 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   },
 
   submitReport: async (reportData) => {
-    const { selectedLocation, isSubmitting } = get();
-    if (!selectedLocation || isSubmitting) return false;
+    let canProceed = false;
+    set((state) => {
+      if (!state.selectedLocation || state.isSubmitting) {
+        return state;
+      }
+      canProceed = true;
+      return { isSubmitting: true };
+    });
 
-    set({ isSubmitting: true });
+    if (!canProceed) return false;
+
+    const { selectedLocation } = get();
+    if (!selectedLocation) {
+      set({ isSubmitting: false });
+      return false;
+    }
+
     try {
       const newReport = await supabaseService.createReport({
         ...reportData,
@@ -136,7 +149,7 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
       }));
       return true;
     } catch (error) {
-      console.error('Failed to submit report', error);
+      console.error('[EmergencyStore] Error al enviar el reporte:', error);
       get().showToast('Error al enviar el reporte.');
       set({ isSubmitting: false });
       return false;
@@ -144,9 +157,15 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
   },
 
   submitOffer: async (offerData) => {
-    if (get().isSubmitting) return false;
+    let canProceed = false;
+    set((state) => {
+      if (state.isSubmitting) return state;
+      canProceed = true;
+      return { isSubmitting: true };
+    });
+
+    if (!canProceed) return false;
     
-    set({ isSubmitting: true });
     try {
       const newOffer = await supabaseService.createOffer(offerData);
       set(state => ({
@@ -157,7 +176,7 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
       get().showToast('¡Gracias por tu ofrecimiento! Nos pondremos en contacto.');
       return true;
     } catch (error) {
-      console.error('Failed to submit offer', error);
+      console.error('[EmergencyStore] Error al registrar ofrecimiento:', error);
       get().showToast('Error al registrar el ofrecimiento.');
       set({ isSubmitting: false });
       return false;
@@ -173,7 +192,12 @@ export const useEmergencyStore = create<EmergencyState>((set, get) => ({
       }));
       get().showToast('Estado del reporte actualizado.');
       return true;
-    } catch(error) {
+    } catch (error) {
+      console.error('[EmergencyStore] Error actualizando estado del reporte:', {
+        reportId,
+        targetStatus: status,
+        error: error instanceof Error ? error.message : String(error),
+      });
       get().showToast('Error al actualizar el estado.');
       return false;
     }

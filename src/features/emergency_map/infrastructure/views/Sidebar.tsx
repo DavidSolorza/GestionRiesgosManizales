@@ -1,5 +1,6 @@
 import { Phone, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { useEmergencyStore } from '../../application/useEmergencyStore';
+import { getRelativeTime } from '../../../../core/utils/dateUtils';
 
 export function Sidebar() {
   const { reports, isLoading, activeFilter, setFilter, isAdmin, updateReportStatus, isSidebarOpen, setSidebarOpen } = useEmergencyStore();
@@ -108,7 +109,7 @@ export function Sidebar() {
                   {getStatusLabel(report.status)}
                 </span>
                 <span className="text-xs text-slate-400 font-medium bg-slate-50 px-2 py-0.5 rounded-full">
-                  Hace {Math.floor(Math.random() * 60) + 1} min
+                  {getRelativeTime(report.createdAt)}
                 </span>
               </div>
               

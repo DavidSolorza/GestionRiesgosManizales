@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Lock, ShieldAlert } from 'lucide-react';
 import { useEmergencyStore } from '../../features/emergency_map/application/useEmergencyStore';
+import { env } from '../../core/config/env';
 
 export function AdminLoginModal() {
   const { isAdminLoginOpen, setAdminLoginOpen, setIsAdmin, showToast } = useEmergencyStore();
@@ -11,7 +12,7 @@ export function AdminLoginModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') {
+    if (password === env.adminPassword) {
       setIsAdmin(true);
       setAdminLoginOpen(false);
       showToast('Modo administrador activado');

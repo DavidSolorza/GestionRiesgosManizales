@@ -1,13 +1,15 @@
+import { env } from '../config/env';
+
 export class HttpClient {
   private baseUrl: string;
   private apiKey: string;
 
   constructor() {
-    this.baseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-    this.apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+    this.baseUrl = env.supabaseUrl;
+    this.apiKey = env.supabaseKey;
 
     if (!this.baseUrl || !this.apiKey) {
-      console.error('Missing Supabase credentials in .env');
+      console.error('Missing Supabase credentials in environment configuration');
     }
   }
 
